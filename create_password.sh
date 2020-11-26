@@ -1,3 +1,5 @@
+#!/bin/bash
+
 SYMBOLS=""
 for symbol in {A..Z} {a..z} {0..9}; do SYMBOLS=$SYMBOLS$symbol; done
 PASSWORD_LENGTH=16  
