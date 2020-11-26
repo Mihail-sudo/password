@@ -14,7 +14,7 @@ while read login; do
 		PASSWORD=$PASSWORD${SYMBOLS:$(expr $RANDOM % ${#SYMBOLS}):1}
 	done
 	echo $PASSWORD
-	htpasswd -b WAY_TO_PASSWORD_FILE $login $PASSWORD
+	htpasswd -b $WAY_TO_PASSWORD_FILE $login $PASSWORD
 	##curl -u $line:$PASSWORD http://localhost:8080
 	curl -X POST "$login:$PASSWORD" http://localhost:8080
 
