@@ -19,7 +19,7 @@ do
 	case "$1" in
 		--loginspath) loginspath=$2; shift;;
 		--login) login="$2"; shift ;;
-		--passpath) passpat="$2"; shift;;
+		--passpath) passpath="$2"; shift;;
 		--webhook) webhook="$2"; shift;;
 		*) echo "$1 is not an option";; 
 	esac
@@ -40,13 +40,13 @@ then
 fi
 
 
-if [[ -e $LOGINS ]]
+if [[ -e $loginspath ]]
 then
-    while read login; do
-    pas=$(create_password)
-    htpasswd -b $passpath $login $pas
-    curl -X POST "$login:$pas" "$webhook"
-    done < "$LOGINS_FILE"
+    while read log; do
+        pas=$(create_password)
+        htpasswd -b $passpath $log $pas
+        curl -X POST "$log:$pas" "$webhook"
+    done < "$loginspath"
     exit
 else
     pas=$(create_password)
