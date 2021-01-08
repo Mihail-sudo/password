@@ -2,20 +2,55 @@
 
 SYMBOLS=""
 for symbol in {A..Z} {a..z} {0..9}; do SYMBOLS=$SYMBOLS$symbol; done
-PASSWORD_LENGTH=16  
-PASSWORD=""    
 RANDOM=256
-WAY_TO_PASSWORD_FILE=$2
-LOGINS_FILE=$1
+PASSWORD_LENGTH=16 
 
-while read login; do
-	PASSWORD=""
+function create_password { 
+	PASSWORD=""    
 	for i in `seq 1 $PASSWORD_LENGTH`; do
 		PASSWORD=$PASSWORD${SYMBOLS:$(expr $RANDOM % ${#SYMBOLS}):1}
 	done
 	echo $PASSWORD
-	htpasswd -b $WAY_TO_PASSWORD_FILE $login $PASSWORD
-	##curl -u $line:$PASSWORD http://localhost:8080
-	curl -X POST "$login:$PASSWORD" http://localhost:8080
+}
 
-done < "$LOGINS_FILE"
+
+while [ -n "$1" ]
+do
+	case "$1" in
+		--loginspath) loginspath=$2; shift;;
+		--login) login="$2"; shift ;;
+		--passpath) passpat="$2"; shift;;
+		--webhook) webhook="$2"; shift;;
+		*) echo "$1 is not an option";; 
+	esac
+	shift
+done
+
+
+if [[ ( $loginspath = "" ) && ( $login = "" ) ]]
+then
+    echo "no loginspath and login"
+    exit
+elif [ $webhook = "" ]
+then
+    echo "no webhook"
+elif [ $passpath = "" ]
+then
+    echo "no passpath"
+fi
+
+
+if [[ -e $LOGINS ]]
+then
+    while read login; do
+    pas=$(create_password)
+    htpasswd -b $passpath $login $pas
+    curl -X POST "$login:$pas" "$webhook"
+    done < "$LOGINS_FILE"
+    exit
+else
+    pas=$(create_password)
+    htpasswd -b $passpath $login $pas
+    curl -X POST "$login:$pas" "$webhook"
+fi
+exit
