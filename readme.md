@@ -13,3 +13,7 @@ bad example:
 or 
 ./create_password.sh --passpath /User/.../.psswrd --webhook hello.com
 (no loginspath and login)
+
+WARNING
+file with logins must have emty string at the end
+(last login won't be readen without it)
